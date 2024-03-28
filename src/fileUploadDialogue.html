@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+  </head>
+  <body>
+
+    <input type="file" id="file" >
+    <input type="button" id="upload" value="Upload" class="action" onclick="uploadFiles()">
+    <p id="msg"></p>
+    
+    <script >
+      var fileUploader = document.getElementById("file");
+      var msg = document.getElementById("msg");//for display msg
+      function uploadFiles() { 
+        msg.innerHTML = "Uploading file..."; //change msg text when is uploading
+        var file = fileUploader.files[0];    //file
+        var reader = new FileReader();       //reader for convert the file
+        reader.readAsDataURL(file)           //convert file to Base64
+        reader.onload = function() {         //necessary to access the result (promise)
+          var rawLog = reader.result.split(',')[1];  //get only de Base64 part of file
+          google.script.run                  
+            .withSuccessHandler(function (a) {
+              msg.innerHTML = "Uploaded at <a href="+a+" target='_blank'>"+a+"</a>" ;  //if success, change our msg
+            })
+            .uploadFilesToGoogleDrive(rawLog, file.name, file.type); // call the function in google side, and pass the data in Base64,name and type
+        };
+    }
+    </script>
+  </body>
+</html>
